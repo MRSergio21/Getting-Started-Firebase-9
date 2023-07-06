@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, onSnapshot, deleteDoc, doc, addDoc, query, where, orderBy, serverTimestamp, getDoc, updateDoc } from 'firebase/firestore'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword, onAuthStateChanged} from 'firebase/auth'
 
 
 const firebaseConfig = {
@@ -72,15 +72,46 @@ const signupForm = document.querySelector('.signup')
 signupForm.addEventListener('submit', (e) => {
     e.preventDefault()
 
-    const email = signupForm.email.value;
-    const password = signupForm.password.value;
+    const email = signupForm.email.value
+    const password = signupForm.password.value
 
     createUserWithEmailAndPassword(auth, email, password)
         .then((cred) => {
-            console.log('user created', cred.user)
+            // console.log('user created:', cred.user)
             signupForm.reset()
         })
         .catch((err) => {
             console.log(err.message)
         })
-})        
+})
+
+const logoutButton = document.querySelector('.logout')
+logoutButton.addEventListener('click', () => {
+    signOut(auth)
+    .then(() => {
+        // console.log('The user singned out')
+    })
+    .catch((e) => {
+        console.log(err.mesagge)
+    })
+})
+
+const loginForm = document.querySelector('.login')
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+
+    const email = loginForm.email.value
+    const password = loginForm.password.value
+
+    signInWithEmailAndPassword(auth, email, password)
+    .then((cred) => {
+        // console.log('User logged in: ', cred.user)
+    })
+    .catch((err) => {
+        console.log(err.mesagge)
+    })
+})
+
+onAuthStateChanged(auth, (user) => {
+    console.log('User status changed:', user)
+})
